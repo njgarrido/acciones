@@ -4,40 +4,97 @@
         <head>
             <title>Tarea 3</title>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
+            <script src="plotly.min.js"></script>
         
             <script type = "text/javascript">
                 var socket = io("wss://le-18262636.bitzonte.com", {path: '/stocks'});
 
-                function WebSocketTest2() {
-                   socket.emit("EXCHANGES");
-                   socket.emit("STOCKS");
+                //Funciones que procesan los datos
+                function processUpdate(data) {
+                    var ticker = data.ticker;
+                    var time = data.time;
+                    var value = data.value;
+                }
+                
+                function processBuy(data) {
+                    var ticker = data.ticker;
+                    var time = data.time;
+                    var volume = data.volume;
+                }
+
+                function processSell(data) {
+                    var ticker = data.ticker;
+                    var time = data.time;
+                    var volume = data.volume;
+                }
+
+                //Funcion que emite al servidor
+                function EmitExchanges(){
+                    socket.emit('EXCHANGES')
+                    socket.on('EXCHANGES', (data) => {
+                        console.log("echange")
+                        console.log(data);
+                   });
+                }
+
+                function EmitStocks(){
+                    socket.emit('STOCKS')
+                    socket.on('STOCKS', (data) => {
+                        console.log("stocks");
+                        console.log(data);
+                        console.log(data[2]);
+                   });
                 }
         
+                //Funcion que recibe del servidor
                 function WebSocketTest() {
                     socket.on('UPDATE', (data) => {
                         console.log("Update");
                         console.log(data);
-                      //addAccion(data);
+                        processUpdate(data);
                     });
-        
+    
                     socket.on('BUY', (data) => {
                         console.log("Buy");
-                         console.log(data);
-                       //addBuy(data);
+                        console.log(data);
+                        processBuy(data);
                      });
         
                     socket.on('SELL', (data) => {
                         console.log("Sell");
                         console.log(data);
-                       //addSell(data);
+                        processSell(data);
                      });
-        
-                 }
+                }
+
+                //Funcion pa probar el grafico
+                 function getData() {
+                    return Math.random();
+                }
+
+                function getGrafico(ticker, value, time) {
+                    Plotly.plot(ticker,[{
+                        x: [time],
+                        y:[value],
+                        type:'line'
+                    }]);
+                }
+                
             </script>
         </head>
         <button name="button">Press me</button>
+        <div id="chart"></div>
         <script type = "text/javascript">
-            WebSocketTest();
+            EmitExchanges();
+            EmitStocks();
+
+            //getGrafico(ticker, value, time);
+            // setInterval(function() {
+            //     Plotly.extendTraces('chart', { y: [[getData()]] }, [0])
+            // }, 200);
+
+            //WebSocketTest();
 
         </script>
     </body>
