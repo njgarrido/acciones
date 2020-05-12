@@ -1,0 +1,54 @@
+<head>
+    <title>Tarea 3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+  
+    <script type = "text/javascript">
+       var socket = io("wss://e-18262636.bitzonte.com", {path: '/stocks'}, {transports: ['websocket']});
+  
+  
+       function WebSocketTest2() {
+  
+          socket.emit("EXCHANGES");
+          socket.emit("STOCKS");
+  
+       }
+  
+       function WebSocketTest() {
+           socket.on('UPDATE', (data) => {
+              console.log(data);
+              //addAccion(data);
+           });
+  
+           socket.on('BUY', (data) => {
+              console.log(data);
+              //addBuy(data);
+            });
+  
+           socket.on('SELL', (data) => {
+              console.log(data);
+              //addSell(data);
+            });
+  
+        }
+  
+  
+  
+    </script>
+  
+  </head>
+
+  <body>
+
+    <script type="text/javascript">
+
+        WebSocketTest();
+
+        <div id = "sse">
+            <a href = "javascript:WebSocketTest2()">Button</a>
+        </div>
+    </script>
+  </body>
