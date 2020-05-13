@@ -2,130 +2,134 @@
 <html>
     <body>
         <head>
-            <button name="button">Press me</button>
-            <div id="charts"></div>
+            
 
-            <title>Tarea 3</title>
+            <title>Tarea 3 Connected</title>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
             <script type="text/JavaScript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js" ></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
             <script src="plotly.min.js"></script>
+            
+            
         </head>
 
+        <button type="button" class="btn btn-danger">Danger</button>
+        <div id="charts"></div>
 
-
-            <script type = "text/javascript">
-                var socket = io("wss://le-18262636.bitzonte.com", {path: '/stocks'});
-                var stocks = false
-                var exchanges = false
-
-                //Funciones que procesan los datos
-                function processUpdate(data) {
-                    var ticker = data.ticker;
-                    var time = new Date(data.time);
-                    var value = data.value;
-                    Plotly.extendTraces(ticker, { x:[[time]], y: [[value]] }, [0]);    //Funcion que actualiza el grafico                              
-                }
-                
-                function processBuy(data) {
-                    var ticker = data.ticker;
-                    var time = data.time;
-                    var volume = data.volume;
-                }
-
-                function processSell(data) {
-                    var ticker = data.ticker;
-                    var time = data.time;
-                    var volume = data.volume;
-                }
-
-                //Funcion que emite al servidor
-                function EmitExchanges(){
-                    socket.emit('EXCHANGES')
-                    socket.on('EXCHANGES', (data) => {
-                        console.log("echange")
-                        console.log(data);
-                   });
-                }
-
-                function EmitStocks(){
-                    socket.emit('STOCKS')
-                    socket.on('STOCKS', (data) => {
-                        console.log("stocks");
-                        console.log(data);
-                        var length = data.length;
-                        for (indice in data) {
-                            info = data[indice];
-                            $('#charts').append($('<div/>', { id: info.ticker}))
-                            getGrafico(info.ticker);
-                        }
-                        stocks = true;
-                   });
-                }
         
-                //Funcion que recibe del servidor
-                function WebSocketTest() {
-                    socket.on('UPDATE', (data) => {
-                        console.log("Update");
-                        console.log(data);
-                        //Empieza a funcionar desde que se lee el stocks
-                        if (stocks) {  
-                            processUpdate(data);
-                        }
-                        
-                    });
-                    socket.on('BUY', (data) => {
-                        console.log("Buy");
-                        console.log(data);
-                        processBuy(data);
-                     });
-                    socket.on('SELL', (data) => {
-                        console.log("Sell");
-                        console.log(data);
-                        processSell(data);
-                     });
-                }
+        <script type = "text/javascript">
+            var socket = io("wss://le-18262636.bitzonte.com", {path: '/stocks'});
+            var stocks = false
+            var exchanges = false
 
-                //Funcion que arma grafico vacio
-                function getGrafico(ticker) {
-                    Plotly.plot(ticker,[{
-                        title: {text: ticker},
-                        x:[],
-                        y:[],
-                        type:'line'
-                    }],{
-                    title: {
-                        text: ticker,
-                        font: {
-                        family: 'Courier New, monospace',
-                        size: 24
-                        },
-                        xref: 'paper',
-                        x: 0.05,
-                    },
-                    xaxis: {
-                        title: {
-                        text: 'Time',
-                        font: {
-                            family: 'Courier New, monospace',
-                            size: 18,
-                            color: '#7f7f7f'
-                        }
-                        },
-                    },
-                    yaxis: {
-                        title: {
-                        text: 'Value',
-                        font: {
-                            family: 'Courier New, monospace',
-                            size: 18,
-                            color: '#7f7f7f'
-                        }
-                        }
+            //Funciones que procesan los datos
+            function processUpdate(data) {
+                var ticker = data.ticker;
+                var time = new Date(data.time);
+                var value = data.value;
+                Plotly.extendTraces(ticker, { x:[[time]], y: [[value]] }, [0]);    //Funcion que actualiza el grafico                              
+            }
+            
+            function processBuy(data) {
+                var ticker = data.ticker;
+                var time = data.time;
+                var volume = data.volume;
+            }
+
+            function processSell(data) {
+                var ticker = data.ticker;
+                var time = data.time;
+                var volume = data.volume;
+            }
+
+            //Funcion que emite al servidor
+            function EmitExchanges(){
+                socket.emit('EXCHANGES')
+                socket.on('EXCHANGES', (data) => {
+                    console.log("echange")
+                    console.log(data);
+                });
+            }
+
+            function EmitStocks(){
+                socket.emit('STOCKS')
+                socket.on('STOCKS', (data) => {
+                    console.log("stocks");
+                    console.log(data);
+                    var length = data.length;
+                    for (indice in data) {
+                        info = data[indice];
+                        $('#charts').append($('<div/>', { id: info.ticker}))
+                        getGrafico(info.ticker);
                     }
+                    stocks = true;
+                });
+            }
+    
+            //Funcion que recibe del servidor
+            function WebSocketTest() {
+                socket.on('UPDATE', (data) => {
+                    console.log("Update");
+                    console.log(data);
+                    //Empieza a funcionar desde que se lee el stocks
+                    if (stocks) {  
+                        processUpdate(data);
+                    }
+                    
+                });
+                socket.on('BUY', (data) => {
+                    console.log("Buy");
+                    console.log(data);
+                    processBuy(data);
                     });
+                socket.on('SELL', (data) => {
+                    console.log("Sell");
+                    console.log(data);
+                    processSell(data);
+                    });
+            }
+
+            //Funcion que arma grafico vacio
+            function getGrafico(ticker) {
+                Plotly.plot(ticker,[{
+                    title: {text: ticker},
+                    x:[],
+                    y:[],
+                    type:'line'
+                }],{
+                title: {
+                    text: ticker,
+                    font: {
+                    family: 'Courier New, monospace',
+                    size: 24
+                    },
+                    xref: 'paper',
+                    x: 0.05,
+                },
+                xaxis: {
+                    title: {
+                    text: 'Time',
+                    font: {
+                        family: 'Courier New, monospace',
+                        size: 18,
+                        color: '#7f7f7f'
+                    }
+                    },
+                },
+                yaxis: {
+                    title: {
+                    text: 'Value',
+                    font: {
+                        family: 'Courier New, monospace',
+                        size: 18,
+                        color: '#7f7f7f'
+                    }
+                    }
                 }
-                
-            </script>
+                });
+            }
+            
+        </script>
 
 
         <script type = "text/javascript">
