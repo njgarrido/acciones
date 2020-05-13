@@ -6,7 +6,7 @@
 
             <title>Tarea 3 Connected</title>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-            <script type="text/JavaScript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js" ></script>
+            <script type="text/JavaScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js" ></script>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
             <script src="plotly.min.js"></script>
@@ -26,6 +26,8 @@
             var stocks = false;
             var exchanges = false;
             var dicc_stock = {};
+            var dicc_exchange = {};
+            var volumen_total_mercado = 0;
 
             class Stock{
                 constructor(ticker, company, country, quote) {
@@ -39,6 +41,8 @@
                     this.quote = quote;
                     this.volumen_compra = 0;
                     this.volumen_venta = 0;
+                    this.volumen_total = 0;
+                    this.exchange = null
                 }
             }
 
@@ -55,22 +59,47 @@
                 stock.last = value;
             }
 
+            class Exchange{
+                constructor(name, exchange_ticker, country, address, listed_companies){
+                    this.name = name;
+                    this.exchange_ticker = exchange_ticker;
+                    this.country = country;
+                    this.address = address;
+                    this.listed_companies = listed_companies;
+                    this.v_compra = 0;
+                    this.v_venta = 0;
+                    this.v_total = 0;
+                }
+            }
+
 
             //Funcion que emite al servidor
             function EmitExchanges(){
                 socket.emit('EXCHANGES')
                 socket.on('EXCHANGES', (data) => {
-                    console.log("echange")
-                    console.log(data);
+                    for (indice in data) {
+                        info = data[indice];
+                        var exc = new Exchange(info.name, info.exchange_ticker, info.country, info.address, info.listed_companies);
+                        dicc_exchange[info.name]
+                        for (i in info.listed_companies){
+                            var name_company = info.listed_companies[i];
+                            for (element in dicc_stock){
+                                var stoc = dicc_stock[element];
+                                if (stoc.company == name_company){
+                                    stoc.exchange = exc;
+                                }
+                            }
+                        }
+
+                    }
+                    exchanges = true;
                 });
+                
             }
 
             function EmitStocks(){
                 socket.emit('STOCKS')
                 socket.on('STOCKS', (data) => {
-                    console.log("stocks");
-                    console.log(data);
-                    var length = data.length;
                     for (indice in data) {
                         info = data[indice];
                         $('#charts').append($('<div/>', { id: info.ticker}))
@@ -78,6 +107,7 @@
                         var estok = new Stock(info.ticker, info.company_name, info.country, info.quote_base);
                         dicc_stock[info.ticker] = estok;
                     }
+                    EmitExchanges();
                     stocks = true;
                 });
             }
@@ -96,14 +126,24 @@
                 var ticker = data.ticker;
                 var time = data.time;
                 var volume = data.volume;
-                dicc_stock[ticker].volumen_compra += volume;
+                stok = dicc_stock[ticker];
+                stok.volumen_compra += volume;
+                stok.volumen_total += volume;
+                stok.exchange.v_compra += volume;
+                stok.exchange.v_total += volume;
+                volumen_total_mercado += volume;
             }
 
             function processSell(data) {
                 var ticker = data.ticker;
                 var time = data.time;
                 var volume = data.volume;
-                dicc_stock[ticker].volumen_venta += volume;
+                stok = dicc_stock[ticker];
+                stok.volumen_venta += volume;
+                stok.volumen_total += volume;
+                stok.exchange.v_venta += volume;
+                stok.exchange.v_total += volume;
+                volumen_total_mercado += volume;
             }
 
 
@@ -121,14 +161,18 @@
                     console.log("Buy");
                     console.log(data);
                     if (stocks){
-                        processBuy(data);
+                        if (exchanges){
+                            processBuy(data);
+                        }
                     }
                 });
                 socket.on('SELL', (data) => {
                     console.log("Sell");
                     console.log(data);
                     if (stocks){
-                        processSell(data);
+                        if (exchanges){
+                            processSell(data);
+                        }
                     }
                 });
             }
@@ -177,7 +221,6 @@
 
 
         <script type = "text/javascript">
-            EmitExchanges();
             EmitStocks();
 
 
