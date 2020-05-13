@@ -23,28 +23,38 @@
         
         <script type = "text/javascript">
             var socket = io("wss://le-18262636.bitzonte.com", {path: '/stocks'});
-            var stocks = false
-            var exchanges = false
+            var stocks = false;
+            var exchanges = false;
+            var dicc_stock = {};
 
-            //Funciones que procesan los datos
-            function processUpdate(data) {
-                var ticker = data.ticker;
-                var time = new Date(data.time);
-                var value = data.value;
-                Plotly.extendTraces(ticker, { x:[[time]], y: [[value]] }, [0]);    //Funcion que actualiza el grafico                              
-            }
-            
-            function processBuy(data) {
-                var ticker = data.ticker;
-                var time = data.time;
-                var volume = data.volume;
+            class Stock{
+                constructor(ticker, company, country, quote) {
+                    this.ticker = ticker;
+                    this.max = 0;
+                    this.min = Infinity;
+                    this.last = 0;
+                    this.variacion = 0;
+                    this.company = company;
+                    this.country = country;
+                    this.quote = quote;
+                    this.volumen_compra = 0;
+                    this.volumen_venta = 0;
+                }
             }
 
-            function processSell(data) {
-                var ticker = data.ticker;
-                var time = data.time;
-                var volume = data.volume;
+            function ModificarStocks(stock, value){
+                if (value > stock.max){
+                    stock.max = value;
+                }
+                if (value < stock.min){
+                    stock.min = value;
+                }
+                if (stock.last != 0){
+                    stock.variacion = (100*value/stock.last) -100;
+                }
+                stock.last = value;
             }
+
 
             //Funcion que emite al servidor
             function EmitExchanges(){
@@ -65,11 +75,38 @@
                         info = data[indice];
                         $('#charts').append($('<div/>', { id: info.ticker}))
                         getGrafico(info.ticker);
+                        var estok = new Stock(info.ticker, info.company_name, info.country, info.quote_base);
+                        dicc_stock[info.ticker] = estok;
                     }
                     stocks = true;
                 });
             }
     
+
+            //Funciones que procesan los datos
+            function processUpdate(data) {
+                var ticker = data.ticker;
+                var time = new Date(data.time);
+                var value = data.value;
+                ModificarStocks(dicc_stock[ticker], value);
+                Plotly.extendTraces(ticker, { x:[[time]], y: [[value]] }, [0]);    //Funcion que actualiza el grafico                              
+            }
+            
+            function processBuy(data) {
+                var ticker = data.ticker;
+                var time = data.time;
+                var volume = data.volume;
+                dicc_stock[ticker].volumen_compra += volume;
+            }
+
+            function processSell(data) {
+                var ticker = data.ticker;
+                var time = data.time;
+                var volume = data.volume;
+                dicc_stock[ticker].volumen_venta += volume;
+            }
+
+
             //Funcion que recibe del servidor
             function WebSocketTest() {
                 socket.on('UPDATE', (data) => {
@@ -78,19 +115,22 @@
                     //Empieza a funcionar desde que se lee el stocks
                     if (stocks) {  
                         processUpdate(data);
-                    }
-                    
+                    }  
                 });
                 socket.on('BUY', (data) => {
                     console.log("Buy");
                     console.log(data);
-                    processBuy(data);
-                    });
+                    if (stocks){
+                        processBuy(data);
+                    }
+                });
                 socket.on('SELL', (data) => {
                     console.log("Sell");
                     console.log(data);
-                    processSell(data);
-                    });
+                    if (stocks){
+                        processSell(data);
+                    }
+                });
             }
 
             //Funcion que arma grafico vacio
