@@ -2,11 +2,17 @@
 <html>
     <body>
         <head>
+            <button name="button">Press me</button>
+            <div id="charts"></div>
+
             <title>Tarea 3</title>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
             <script type="text/JavaScript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js" ></script>
             <script src="plotly.min.js"></script>
-        
+        </head>
+
+
+
             <script type = "text/javascript">
                 var socket = io("wss://le-18262636.bitzonte.com", {path: '/stocks'});
                 var stocks = false
@@ -82,16 +88,46 @@
                 //Funcion que arma grafico vacio
                 function getGrafico(ticker) {
                     Plotly.plot(ticker,[{
+                        title: {text: ticker},
                         x:[],
                         y:[],
                         type:'line'
-                    }]);
+                    }],{
+                    title: {
+                        text: ticker,
+                        font: {
+                        family: 'Courier New, monospace',
+                        size: 24
+                        },
+                        xref: 'paper',
+                        x: 0.05,
+                    },
+                    xaxis: {
+                        title: {
+                        text: 'Time',
+                        font: {
+                            family: 'Courier New, monospace',
+                            size: 18,
+                            color: '#7f7f7f'
+                        }
+                        },
+                    },
+                    yaxis: {
+                        title: {
+                        text: 'Value',
+                        font: {
+                            family: 'Courier New, monospace',
+                            size: 18,
+                            color: '#7f7f7f'
+                        }
+                        }
+                    }
+                    });
                 }
                 
             </script>
-        </head>
-        <button name="button">Press me</button>
-        <div id="charts"></div>
+
+
         <script type = "text/javascript">
             EmitExchanges();
             EmitStocks();
