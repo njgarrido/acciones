@@ -18,6 +18,8 @@
         <a href="disconnect.html" type="button" class="btn btn-danger">Disconnect</a>
         <h2>Graphics</h2>
         <div id="charts"></div>
+        <h2>Mercados</h2>
+        <div id="tablas"></div>
 
         
         <script type = "text/javascript">
@@ -26,7 +28,6 @@
             var exchanges = false;
             var dicc_stock = {};
             var dicc_exchange = {};
-            var dicc_tablasStock = {};
             var volumen_total_mercado = 0;
 
             class Stock{
@@ -84,6 +85,19 @@
                 return tabla
             }
 
+            function Tabla_exchange(stock){
+                var exchan = stock.exchange;
+                var pm = 100*exchan.v_total/volumen_total_mercado;
+                var titulo = "<tr><strong>"+ exchan.name + " / " + exchan.exchange_ticker + "</strong></tr>";
+                var linea1 = "<tr>Volumen compra: "+ exchan.v_compra + "</tr>";
+                var linea2 = "<tr>Volumen venta: "+ exchan.v_venta + "</tr>";
+                var linea3 = "<tr>Volumen total: "+ exchan.v_total + "</tr>";
+                var linea4 = "<tr>Cantidad de acciones: "+ "Completar..." + "</tr>";
+                var linea5 = "<tr>Participacion de mercado: "+ pm + "</tr>";
+                tabla = "<table>" + titulo + "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "</table>" + "<br>";
+                return tabla
+            }
+
             //Funcion que emite al servidor
             function EmitExchanges(){
                 socket.emit('EXCHANGES')
@@ -101,7 +115,7 @@
                                 }
                             }
                         }
-
+                        $('#tablas').append($('<div/>', { id: info.name}))
                     }
                     exchanges = true;
                 });
@@ -131,8 +145,10 @@
                 var ticker = data.ticker;
                 var time = new Date(data.time);
                 var value = data.value;
-                ModificarStocks(dicc_stock[ticker], value);
-                document.getElementById(dicc_stock[ticker].company).innerHTML = Tabla_stock(dicc_stock[ticker]);
+                stok = dicc_stock[ticker]
+                ModificarStocks(stok, value);
+                document.getElementById(stok.company).innerHTML = Tabla_stock(stok);
+                document.getElementById(stok.exchange.name).innerHTML = Tabla_exchange(stok);
                 Plotly.extendTraces(ticker, { x:[[time]], y: [[value]] }, [0]);    //Funcion que actualiza el grafico                              
             }
             
@@ -146,6 +162,8 @@
                 stok.exchange.v_compra += volume;
                 stok.exchange.v_total += volume;
                 volumen_total_mercado += volume;
+                document.getElementById(stok.company).innerHTML = Tabla_stock(stok);
+                document.getElementById(stok.exchange.name).innerHTML = Tabla_exchange(stok);
             }
 
             function processSell(data) {
@@ -158,6 +176,8 @@
                 stok.exchange.v_venta += volume;
                 stok.exchange.v_total += volume;
                 volumen_total_mercado += volume;
+                document.getElementById(stok.company).innerHTML = Tabla_stock(stok);
+                document.getElementById(stok.exchange.name).innerHTML = Tabla_exchange(stok);
             }
 
 
@@ -168,7 +188,9 @@
                     console.log(data);
                     //Empieza a funcionar desde que se lee el stocks
                     if (stocks) {  
-                        processUpdate(data);
+                        if (exchanges){
+                            processUpdate(data);
+                        }
                     }  
                 });
                 socket.on('BUY', (data) => {
