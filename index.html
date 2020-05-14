@@ -15,10 +15,9 @@
         </head>
 
         <h1>State: Connected</h1>
-        <a href="file:///Users/usuario/Desktop/acciones/disconnect.html" type="button" class="btn btn-danger">Disconnect</a>
+        <a href="disconnect.html" type="button" class="btn btn-danger">Disconnect</a>
         <h2>Graphics</h2>
         <div id="charts"></div>
-        <h2>Information</h2>
 
         
         <script type = "text/javascript">
@@ -27,6 +26,7 @@
             var exchanges = false;
             var dicc_stock = {};
             var dicc_exchange = {};
+            var dicc_tablasStock = {};
             var volumen_total_mercado = 0;
 
             class Stock{
@@ -73,6 +73,17 @@
             }
 
 
+            function Tabla_stock(stock){
+                var titulo = "<tr><strong>"+ stock.company + " / " + stock.ticker + "</strong></tr>";
+                var linea1 = "<tr>Volumen total transado: "+ stock.volumen_total + "</tr>";
+                var linea2 = "<tr>Alto historico: "+ stock.max + "</tr>";
+                var linea3 = "<tr>Bajo historico: "+ stock.min + "</tr>";
+                var linea4 = "<tr>Ultimo precio: "+ stock.last + "</tr>";
+                var linea5 = "<tr>Variacion porcentual: "+ stock.variacion + "</tr>";
+                tabla = "<table>" + titulo + "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "</table>" + "<br>";
+                return tabla
+            }
+
             //Funcion que emite al servidor
             function EmitExchanges(){
                 socket.emit('EXCHANGES')
@@ -106,8 +117,10 @@
                         getGrafico(info.ticker);
                         var estok = new Stock(info.ticker, info.company_name, info.country, info.quote_base);
                         dicc_stock[info.ticker] = estok;
+                        $('#charts').append($('<div/>', { id: info.company_name}))
                     }
                     EmitExchanges();
+
                     stocks = true;
                 });
             }
@@ -119,6 +132,7 @@
                 var time = new Date(data.time);
                 var value = data.value;
                 ModificarStocks(dicc_stock[ticker], value);
+                document.getElementById(dicc_stock[ticker].company).innerHTML = Tabla_stock(dicc_stock[ticker]);
                 Plotly.extendTraces(ticker, { x:[[time]], y: [[value]] }, [0]);    //Funcion que actualiza el grafico                              
             }
             
