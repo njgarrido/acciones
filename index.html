@@ -202,8 +202,6 @@
             //Funcion que recibe del servidor
             function WebSocketTest() {
                 socket.on('UPDATE', (data) => {
-                    console.log("Update");
-                    console.log(data);
                     //Empieza a funcionar desde que se lee el stocks
                     if (stocks) {  
                         if (exchanges){
@@ -212,8 +210,6 @@
                     }  
                 });
                 socket.on('BUY', (data) => {
-                    console.log("Buy");
-                    console.log(data);
                     if (stocks){
                         if (exchanges){
                             processBuy(data);
@@ -221,8 +217,6 @@
                     }
                 });
                 socket.on('SELL', (data) => {
-                    console.log("Sell");
-                    console.log(data);
                     if (stocks){
                         if (exchanges){
                             processSell(data);
