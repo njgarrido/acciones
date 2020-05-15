@@ -92,12 +92,13 @@
 
             function Tabla_stock(stock){
                 var titulo = "<strong>"+ stock.company + " / " + stock.ticker + "</strong>";
+                var linea0 = "País: "+ stock.country;
                 var linea1 = "Volumen total transado: "+ stock.volumen_total;
                 var linea2 = "Alto historico: "+ stock.max;
                 var linea3 = "Bajo historico: "+ stock.min;
                 var linea4 = "Ultimo precio: "+ stock.last;
                 var linea5 = "Variacion porcentual: "+ stock.variacion;
-                tabla = titulo + "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "<br>"+"<br>";
+                tabla = titulo + "<br>" + linea0+ "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "<br>"+"<br>";
                 return tabla
             }
 
@@ -105,12 +106,13 @@
                 var exchan = stock.exchange;
                 var pm = 100*exchan.v_total/volumen_total_mercado;
                 var titulo = "<strong>"+ exchan.name + " / " + exchan.exchange_ticker + "</strong>";
+                var linea0 = "País: "+ exchan.country;
                 var linea1 = "Volumen compra: "+ exchan.v_compra;
                 var linea2 = "Volumen venta: "+ exchan.v_venta;
                 var linea3 = "Volumen total: "+ exchan.v_total;
                 var linea4 = "Cantidad de acciones: "+ exchan.listed_companies.length;
                 var linea5 = "Participacion de mercado: "+ pm;
-                tabla = titulo + "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "<br>"+"<br>";
+                tabla = titulo + "<br>" + linea0+ "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "<br>"+"<br>";
                 return tabla
             }
 
