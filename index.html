@@ -14,9 +14,15 @@
             <style>
                 div {
                     margin-left: 50px;
+                    margin-right: 50px;
+                    margin-top: 30px;
                 }
                 h2 {
                     margin-left: 50px;
+                }
+                .oscuro{ 
+                    background-color: #1f1f1f; 
+                    color: #f1eded; 
                 }
             </style>
 
@@ -31,12 +37,14 @@
 
         
         <script type = "text/javascript">
+            document.body.classList.toggle("oscuro");
             var socket = io("wss://le-18262636.bitzonte.com", {path: '/stocks'});
             var stocks = false;
             var exchanges = false;
             var dicc_stock = {};
             var dicc_exchange = {};
             var volumen_total_mercado = 0;
+
 
             class Stock{
                 constructor(ticker, company, country, quote) {
@@ -265,6 +273,7 @@
 
 
         <script type = "text/javascript">
+            
             
             EmitStocks();
             WebSocketTest();
