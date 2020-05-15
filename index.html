@@ -4,20 +4,28 @@
         <head>
             
 
-            <title>Tarea 3 Connected</title>
+            <title>Tarea 3 Conectado</title>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
             <script type="text/JavaScript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js" ></script>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
             <script src="plotly.min.js"></script>
             
-            
+            <style>
+                div {
+                    margin-left: 50px;
+                }
+                h2 {
+                    margin-left: 50px;
+                }
+            </style>
+
         </head>
 
-        <h1>State: Connected</h1>
-        <a href="disconnect.html" type="button" class="btn btn-danger">Disconnect</a>
-        <h2>Graphics</h2>
-        <div id="charts"></div>
+        <h1 style="margin-left: 10px;">Estado: Conectado</h1>
+        <a href="disconnect.html" type="button" class="btn btn-danger" style="float: right; margin-right: 50px;">Desconectar</a>
+        <h2 >Acciones</h2>
+        <div id="charts" ></div>
         <h2>Mercados</h2>
         <div id="tablas"></div>
 
@@ -75,26 +83,26 @@
 
 
             function Tabla_stock(stock){
-                var titulo = "<tr><strong>"+ stock.company + " / " + stock.ticker + "</strong></tr>";
-                var linea1 = "<tr>Volumen total transado: "+ stock.volumen_total + "</tr>";
-                var linea2 = "<tr>Alto historico: "+ stock.max + "</tr>";
-                var linea3 = "<tr>Bajo historico: "+ stock.min + "</tr>";
-                var linea4 = "<tr>Ultimo precio: "+ stock.last + "</tr>";
-                var linea5 = "<tr>Variacion porcentual: "+ stock.variacion + "</tr>";
-                tabla = "<table>" + titulo + "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "</table>" + "<br>";
+                var titulo = "<strong>"+ stock.company + " / " + stock.ticker + "</strong>";
+                var linea1 = "Volumen total transado: "+ stock.volumen_total;
+                var linea2 = "Alto historico: "+ stock.max;
+                var linea3 = "Bajo historico: "+ stock.min;
+                var linea4 = "Ultimo precio: "+ stock.last;
+                var linea5 = "Variacion porcentual: "+ stock.variacion;
+                tabla = titulo + "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "<br>"+"<br>";
                 return tabla
             }
 
             function Tabla_exchange(stock){
                 var exchan = stock.exchange;
                 var pm = 100*exchan.v_total/volumen_total_mercado;
-                var titulo = "<tr><strong>"+ exchan.name + " / " + exchan.exchange_ticker + "</strong></tr>";
-                var linea1 = "<tr>Volumen compra: "+ exchan.v_compra + "</tr>";
-                var linea2 = "<tr>Volumen venta: "+ exchan.v_venta + "</tr>";
-                var linea3 = "<tr>Volumen total: "+ exchan.v_total + "</tr>";
-                var linea4 = "<tr>Cantidad de acciones: "+ "Completar..." + "</tr>";
-                var linea5 = "<tr>Participacion de mercado: "+ pm + "</tr>";
-                tabla = "<table>" + titulo + "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "</table>" + "<br>";
+                var titulo = "<strong>"+ exchan.name + " / " + exchan.exchange_ticker + "</strong>";
+                var linea1 = "Volumen compra: "+ exchan.v_compra;
+                var linea2 = "Volumen venta: "+ exchan.v_venta;
+                var linea3 = "Volumen total: "+ exchan.v_total;
+                var linea4 = "Cantidad de acciones: "+ "Completar...";
+                var linea5 = "Participacion de mercado: "+ pm;
+                tabla = "<br>" + titulo + "<br>" + linea1 + "<br>" + linea2 + "<br>" + linea3 + "<br>" + linea4 + "<br>" + linea5 + "<br>"+"<br>";
                 return tabla
             }
 
@@ -257,12 +265,10 @@
 
 
         <script type = "text/javascript">
+            
             EmitStocks();
-
-
             WebSocketTest();
 
-            
 
         </script>
     </body>
